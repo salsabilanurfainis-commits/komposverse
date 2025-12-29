@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Komposverse - Edisi Tani</title>
+    
+    <!-- 1. Pustaka Desain (Tailwind CSS) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Pustaka React & Babel (Agar kode React jalan di browser biasa) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- 3. Pengaturan Import Module -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.263.1"
+      }
+    }
+    </script>
+
+    <style>
+        /* Animasi Tambahan */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(-5%); }
+            50% { transform: translateY(5%); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+    
+    <!-- Tempat Aplikasi Dimuat -->
+    <div id="root"></div>
+
+    <!-- 4. Kode Aplikasi (Logika JavaScript) -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { Sprout, Calculator, Droplets, BookOpen, CheckCircle, AlertTriangle, ArrowRight, ArrowLeft, RefreshCw, Sparkles, MessageSquare, Send, Loader, Key } from 'lucide-react';
+
+        function KomposverseApp() {
+            const [activeTab, setActiveTab] = useState('kalkulator');
+
+            return (
+                <div className="min-h-screen bg-stone-50 pb-24">
+                    {/* Header */}
+                    <header className="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-50">
+                        <div className="max-w-md mx-auto flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <Sprout className="h-6 w-6 text-yellow-300" />
+                                <h1 className="text-xl font-bold tracking-tight">Komposverse <span className="text-xs font-normal bg-yellow-500 text-emerald-900 px-1 rounded ml-1">Edisi Tani</span></h1>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="max-w-md mx-auto">
+                        {activeTab === 'kalkulator' && <CalculatorSection />}
+                        {activeTab === 'panduan' && <GuideSection />}
+                        {activeTab === 'simulasi' && <SimulationSection />}
+                        {activeTab === 'konsultasi' && <ConsultationSection />}
+                    </main>
+
+                    {/* Bottom Navbar */}
+                    <nav className="fixed bottom-0 w-full bg-white border-t border-stone-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] max-w-md mx-auto left-0 right-0 z-50">
+                        <div className="flex justify-around p-2">
+                            <NavButton active={activeTab === 'kalkulator'} onClick={() => setActiveTab('kalkulator')} icon={<Calculator size={20} />} label="Hitung" />
+                            <NavButton active={activeTab === 'panduan'} onClick={() => setActiveTab('panduan')} icon={<BookOpen size={20} />} label="Panduan" />
+                            <NavButton active={activeTab === 'simulasi'} onClick={() => setActiveTab('simulasi')} icon={<CheckCircle size={20} />} label="Cek Mutu" />
+                            <NavButton active={activeTab === 'konsultasi'} onClick={() => setActiveTab('konsultasi')} icon={<Sparkles size={20} />} label="Tanya AI" />
+                        </div>
+                    </nav>
+                </div>
+            );
+        }
+
+        // --- Komponen Pendukung ---
+        
+        function NavButton({ active, onClick, icon, label }) {
+            return (
+                <button onClick={onClick} className={`flex flex-col items-center p-2 rounded-lg w-full transition-colors ${active ? 'text-emerald-700 bg-emerald-50 font-bold' : 'text-stone-400 hover:bg-stone-50'}`}>
+                    {icon}
+                    <span className="text-[10px] mt-1">{label}</span>
+                </button>
+            );
+        }
+
+        function CalculatorSection() {
+            const [karung, setKarung] = useState(1);
+            // Rumus: 1 Karung = 2 sdm EM4, 2 sdm Gula, 5 sdm Dedak, 5 sdm Bokashi, 1.5 Liter Air
+            const em4 = karung * 2;
+            const gula = karung * 2;
+            const dedak = karung * 5;
+            const air = (karung * 1.5).toFixed(1);
+
+            return (
+                <div className="p-4 animate-fade-in">
+                    <div className="bg-white rounded-2xl shadow-sm p-6 mb-4 border border-emerald-100">
+                        <h2 className="text-lg font-bold text-emerald-800 mb-2 flex items-center gap-2"><Calculator className="h-5 w-5" /> Rencana Pembuatan</h2>
+                        <p className="text-sm text-stone-500 mb-6">Masukkan jumlah karung jerami yang Bapak/Ibu miliki.</p>
+                        
+                        <div className="flex items-center justify-between bg-stone-100 p-2 rounded-xl mb-8">
+                            <button onClick={() => setKarung(Math.max(1, karung - 1))} className="bg-white w-12 h-12 rounded-lg shadow text-2xl font-bold text-emerald-700 active:scale-95 transition-transform">-</button>
+                            <div className="text-center">
+                                <span className="text-3xl font-bold text-stone-800 block">{karung}</span>
+                                <span className="text-xs text-stone-500 uppercase font-bold tracking-wider">Karung Jerami</span>
+                            </div>
+                            <button onClick={() => setKarung(karung + 1)} className="bg-emerald-600 w-12 h-12 rounded-lg shadow text-2xl font-bold text-white active:scale-95 transition-transform">+</button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-stone-700 border-b pb-2">Bahan yang Harus Disiapkan:</h3>
+                            <RecipeItem label="Cairan EM-4" amount={em4} unit="Sdm" icon="🧪" color="bg-yellow-100 text-yellow-800" />
+                            <RecipeItem label="Gula / Molase" amount={gula} unit="Sdm" icon="🍯" color="bg-orange-100 text-orange-800" />
+                            <RecipeItem label="Air Bersih" amount={air} unit="Liter" icon="💧" color="bg-blue-100 text-blue-800" />
+                            <RecipeItem label="Dedak & Bokashi" amount={dedak} unit="Sdm (Masing2)" icon="🌾" color="bg-stone-200 text-stone-700" />
+                        </div>
+                        
+                        <div className="mt-6 bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-xs text-emerald-800 flex items-start gap-2">
+                            <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+                            <p>Hitungan ini menggunakan <strong>Resep Hemat (1:50)</strong>. Lebih irit biaya, hasil tetap maksimal.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function RecipeItem({ label, amount, unit, icon, color }) {
+            return (
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xl">{icon}</span>
+                        <span className="text-stone-600 font-medium text-sm">{label}</span>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full font-bold text-sm ${color}`}>
+                        {amount} <span className="text-[10px] opacity-80">{unit}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function GuideSection() {
+            const [step, setStep] = useState(0);
+            const steps = [
+                { title: "1. Siapkan & Cacah", desc: "Kumpulkan jerami sisa panen. Cacah kasar ukuran 5-10 cm (seukuran jari telunjuk) agar cepat busuk.", img: "✂️" },
+                { title: "2. Tabur Bumbu", desc: "Hamparkan jerami. Taburkan Dedak Padi dan Bokashi sesuai takaran kalkulator. Aduk rata.", img: "🥣" },
+                { title: "3. Larutan Cair", desc: "Di ember, campur Air + Gula + EM4. Aduk sampai larut. Ingat: Jangan boros EM4!", img: "💧" },
+                { title: "4. Siram & Aduk", desc: "Siramkan larutan ke jerami sedikit demi sedikit sambil dibolak-balik pakai sekop.", img: "🚿" },
+                { title: "5. Masukkan Karung", desc: "Masukkan ke karung. Padatkan. Ikat mulut karung sangat rapat (kedap udara).", img: "📦" },
+                { title: "6. Panen", desc: "Diamkan 1 Minggu di tempat teduh. Jika sudah hitam & hancur, siap ditebar!", img: "🎉" }
+            ];
+
+            return (
+                <div className="p-4 h-full flex flex-col">
+                    <div className="flex-1 bg-white rounded-2xl shadow-sm p-6 border border-stone-200 flex flex-col items-center text-center">
+                        <div className="w-full flex justify-between text-xs text-stone-400 font-bold tracking-widest mb-6"><span>LANGKAH {step + 1}/{steps.length}</span></div>
+                        <div className="text-8xl mb-6 animate-bounce-slow">{steps[step].img}</div>
+                        <h2 className="text-2xl font-bold text-emerald-800 mb-4">{steps[step].title}</h2>
+                        <p className="text-stone-600 leading-relaxed mb-4">{steps[step].desc}</p>
+                    </div>
+                    <div className="flex justify-between mt-6 gap-4">
+                        <button onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0} className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 ${step === 0 ? 'bg-stone-200 text-stone-400' : 'bg-white text-stone-600 border border-stone-300'}`}><ArrowLeft size={18} /> Balik</button>
+                        <button onClick={() => setStep(Math.min(steps.length - 1, step + 1))} disabled={step === steps.length - 1} className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 ${step === steps.length - 1 ? 'bg-stone-200 text-stone-400' : 'bg-emerald-600 text-white shadow-md'}`}>Lanjut <ArrowRight size={18} /></button>
+                    </div>
+                </div>
+            );
+        }
+
+        function SimulationSection() {
+            const [result, setResult] = useState(null);
+            const handleTest = (type) => {
+                if (type === 'basah') setResult({ status: 'gagal', title: 'Terlalu Basah!', desc: 'Air menetes saat digenggam. Kompos bisa busuk.', solusi: 'Tambah dedak/jerami kering.' });
+                else if (type === 'kering') setResult({ status: 'gagal', title: 'Terlalu Kering!', desc: 'Jerami ambyar saat genggaman dibuka.', solusi: 'Tambah air sedikit demi sedikit.' });
+                else setResult({ status: 'sukses', title: 'Sempurna! (Mantap)', desc: 'Lembap, menggumpal, TIDAK menetes.', solusi: 'Segera masukkan karung!' });
+            };
+
+            if (result) return (
+                <div className="p-4 animate-fade-in">
+                    <div className={`rounded-2xl p-6 text-center shadow-md ${result.status === 'sukses' ? 'bg-emerald-100 border-2 border-emerald-500' : 'bg-red-50 border-2 border-red-300'}`}>
+                        <div className="text-6xl mb-4">{result.status === 'sukses' ? '✅' : '❌'}</div>
+                        <h2 className={`text-2xl font-bold mb-2 ${result.status === 'sukses' ? 'text-emerald-800' : 'text-red-800'}`}>{result.title}</h2>
+                        <p className="text-stone-700 mb-4">{result.desc}</p>
+                        <div className="bg-white/60 p-3 rounded-lg text-left"><span className="font-bold text-xs uppercase opacity-70">Saran:</span><p className="font-medium text-sm mt-1">{result.solusi}</p></div>
+                        <button onClick={() => setResult(null)} className="mt-6 w-full py-3 bg-white rounded-xl font-bold shadow text-stone-700 flex items-center justify-center gap-2"><RefreshCw size={18} /> Coba Lagi</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="p-4">
+                    <div className="text-center mb-6"><h2 className="text-xl font-bold text-emerald-800">Simulasi Uji Kepal</h2><p className="text-stone-500 text-sm">Genggam adonan kompos Anda. Rasanya gimana?</p></div>
+                    <div className="space-y-3">
+                        <button onClick={() => handleTest('basah')} className="w-full bg-white p-4 rounded-xl shadow-sm border border-stone-200 flex items-center gap-4"><div className="bg-blue-100 p-3 rounded-full"><Droplets className="text-blue-600" /></div><div><h3 className="font-bold text-stone-800">Air Menetes Deras</h3><p className="text-xs text-stone-500">Keluar air dari sela jari</p></div></button>
+                        <button onClick={() => handleTest('kering')} className="w-full bg-white p-4 rounded-xl shadow-sm border border-stone-200 flex items-center gap-4"><div className="bg-orange-100 p-3 rounded-full"><Sprout className="text-orange-600" /></div><div><h3 className="font-bold text-stone-800">Ambyar / Kering</h3><p className="text-xs text-stone-500">Tangan dibuka, jerami buyar</p></div></button>
+                        <button onClick={() => handleTest('pas')} className="w-full bg-white p-4 rounded-xl shadow-sm border border-stone-200 flex items-center gap-4"><div className="bg-emerald-100 p-3 rounded-full"><CheckCircle className="text-emerald-600" /></div><div><h3 className="font-bold text-stone-800">Lembap & Menggumpal</h3><p className="text-xs text-stone-500">Basah tapi tak menetes</p></div></button>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Fitur AI dengan Input API Key ---
+        function ConsultationSection() {
+            const [query, setQuery] = useState('');
+            const [response, setResponse] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+            const [showKeyInput, setShowKeyInput] = useState(false);
+
+            const handleSaveKey = () => {
+                localStorage.setItem('gemini_api_key', apiKey);
+                setShowKeyInput(false);
+                alert("Kunci API tersimpan! Silakan tanya Pak Tani sekarang.");
+            };
+
+            const handleAskAI = async () => {
+                if (!query.trim()) return;
+                if (!apiKey) { setShowKeyInput(true); return; }
+
+                setIsLoading(true);
+                setResponse('');
+                
+                try {
+                    const result = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: query }] }],
+                            systemInstruction: { parts: [{ text: "Anda adalah 'Pak Tani AI', asisten ahli pertanian ramah. Jawab singkat, praktis, bahasa Indonesia sederhana untuk petani desa." }] }
+                        })
+                    });
+                    
+                    const data = await result.json();
+                    if(data.error) throw new Error(data.error.message);
+                    setResponse(data.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, coba tanya lagi.");
+                } catch (err) {
+                    setResponse("Gagal terhubung. Cek koneksi internet atau Kunci API Anda mungkin salah/habis kuota.");
+                    setShowKeyInput(true); // Tampilkan input lagi jika error
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            return (
+                <div className="p-4 animate-fade-in pb-20">
+                    <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 mb-6 text-white shadow-lg relative overflow-hidden">
+                        <div className="flex items-center gap-3 mb-2 relative z-10">
+                            <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm"><Sparkles className="text-yellow-300 h-6 w-6" /></div>
+                            <h2 className="text-xl font-bold">Tanya Pak Tani AI</h2>
+                        </div>
+                        <p className="text-emerald-100 text-sm relative z-10">Asisten cerdas siap membantu masalah kompos Bapak/Ibu.</p>
+                        <button onClick={() => setShowKeyInput(!showKeyInput)} className="absolute top-4 right-4 text-emerald-200 hover:text-white"><Key size={18}/></button>
+                    </div>
+
+                    {showKeyInput && (
+                        <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4 animate-fade-in">
+                            <h3 className="font-bold text-yellow-800 text-sm mb-2">Masukkan Kunci Gemini API (Wajib untuk AI)</h3>
+                            <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Tempel API Key di sini..." className="w-full p-2 border rounded-lg mb-2 text-sm"/>
+                            <button onClick={handleSaveKey} className="bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold w-full">Simpan Kunci</button>
+                            <p className="text-[10px] text-yellow-700 mt-2">*Kunci disimpan di HP Anda (LocalStorage), aman.</p>
+                        </div>
+                    )}
+
+                    <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                        <div className="p-6 min-h-[200px] bg-stone-50 border-b border-stone-100">
+                            {response ? (
+                                <div className="flex gap-4 animate-fade-in">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 border border-emerald-200"><Sprout className="text-emerald-600 h-6 w-6" /></div>
+                                    <div className="flex-1 space-y-2"><p className="font-bold text-emerald-800 text-sm">Pak Tani AI:</p><div className="prose prose-sm text-stone-700 whitespace-pre-wrap">{response}</div></div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-10 opacity-50"><MessageSquare className="h-12 w-12 text-stone-300 mx-auto mb-2" /><p className="text-sm">Belum ada percakapan.</p></div>
+                            )}
+                            {isLoading && <div className="flex items-center justify-center gap-2 py-8 text-emerald-600"><Loader className="animate-spin h-5 w-5" /><span className="text-sm">Sedang berpikir...</span></div>}
+                        </div>
+                        
+                        <div className="p-4 bg-white flex gap-2">
+                            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tanya soal kompos..." className="flex-1 bg-stone-100 border-0 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500" />
+                            <button onClick={handleAskAI} disabled={isLoading || !query.trim()} className="bg-emerald-600 text-white p-3 rounded-xl shadow-md w-12 h-12 flex items-center justify-center disabled:bg-stone-300"><Send className="h-5 w-5" /></button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<KomposverseApp />);
+    </script>
+</body>
+</html>
