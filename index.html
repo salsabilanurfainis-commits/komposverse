@@ -8,7 +8,7 @@
     <!-- 1. Pustaka Desain (Tailwind CSS) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. Pustaka React & Babel (Agar kode React jalan di browser biasa) -->
+    <!-- 2. Pustaka React & Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- 3. Pengaturan Import Module -->
@@ -23,21 +23,10 @@
     </script>
 
     <style>
-        /* Animasi Tambahan */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-        @keyframes bounce-slow {
-            0%, 100% { transform: translateY(-5%); }
-            50% { transform: translateY(5%); }
-        }
-        .animate-bounce-slow {
-            animation: bounce-slow 3s infinite;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(-5%); } 50% { transform: translateY(5%); } }
+        .animate-bounce-slow { animation: bounce-slow 3s infinite; }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans">
@@ -45,11 +34,11 @@
     <!-- Tempat Aplikasi Dimuat -->
     <div id="root"></div>
 
-    <!-- 4. Kode Aplikasi (Logika JavaScript) -->
+    <!-- 4. Kode Aplikasi -->
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { Sprout, Calculator, Droplets, BookOpen, CheckCircle, AlertTriangle, ArrowRight, ArrowLeft, RefreshCw, Sparkles, MessageSquare, Send, Loader, Key } from 'lucide-react';
+        import { Sprout, Calculator, Droplets, BookOpen, CheckCircle, AlertTriangle, ArrowRight, ArrowLeft, RefreshCw, Sparkles, MessageSquare, Send, Loader, Key, PlayCircle, X } from 'lucide-react';
 
         function KomposverseApp() {
             const [activeTab, setActiveTab] = useState('kalkulator');
@@ -57,7 +46,7 @@
             return (
                 <div className="min-h-screen bg-stone-50 pb-24">
                     {/* Header */}
-                    <header className="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-50">
+                    <header className="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-40">
                         <div className="max-w-md mx-auto flex justify-between items-center">
                             <div className="flex items-center gap-2">
                                 <Sprout className="h-6 w-6 text-yellow-300" />
@@ -67,7 +56,7 @@
                     </header>
 
                     {/* Main Content */}
-                    <main className="max-w-md mx-auto">
+                    <main className="max-w-md mx-auto relative">
                         {activeTab === 'kalkulator' && <CalculatorSection />}
                         {activeTab === 'panduan' && <GuideSection />}
                         {activeTab === 'simulasi' && <SimulationSection />}
@@ -88,7 +77,6 @@
         }
 
         // --- Komponen Pendukung ---
-        
         function NavButton({ active, onClick, icon, label }) {
             return (
                 <button onClick={onClick} className={`flex flex-col items-center p-2 rounded-lg w-full transition-colors ${active ? 'text-emerald-700 bg-emerald-50 font-bold' : 'text-stone-400 hover:bg-stone-50'}`}>
@@ -100,7 +88,6 @@
 
         function CalculatorSection() {
             const [karung, setKarung] = useState(1);
-            // Rumus: 1 Karung = 2 sdm EM4, 2 sdm Gula, 5 sdm Dedak, 5 sdm Bokashi, 1.5 Liter Air
             const em4 = karung * 2;
             const gula = karung * 2;
             const dedak = karung * 5;
@@ -211,13 +198,14 @@
             );
         }
 
-        // --- Fitur AI dengan Input API Key ---
+        // --- Fitur AI dengan Tutorial Video ---
         function ConsultationSection() {
             const [query, setQuery] = useState('');
             const [response, setResponse] = useState('');
             const [isLoading, setIsLoading] = useState(false);
             const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
             const [showKeyInput, setShowKeyInput] = useState(false);
+            const [showTutorial, setShowTutorial] = useState(false); // State untuk modal video
 
             const handleSaveKey = () => {
                 localStorage.setItem('gemini_api_key', apiKey);
@@ -247,7 +235,7 @@
                     setResponse(data.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, coba tanya lagi.");
                 } catch (err) {
                     setResponse("Gagal terhubung. Cek koneksi internet atau Kunci API Anda mungkin salah/habis kuota.");
-                    setShowKeyInput(true); // Tampilkan input lagi jika error
+                    setShowKeyInput(true);
                 } finally {
                     setIsLoading(false);
                 }
@@ -255,24 +243,36 @@
 
             return (
                 <div className="p-4 animate-fade-in pb-20">
+                    {/* Header Tanya AI */}
                     <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 mb-6 text-white shadow-lg relative overflow-hidden">
                         <div className="flex items-center gap-3 mb-2 relative z-10">
                             <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm"><Sparkles className="text-yellow-300 h-6 w-6" /></div>
                             <h2 className="text-xl font-bold">Tanya Pak Tani AI</h2>
                         </div>
-                        <p className="text-emerald-100 text-sm relative z-10">Asisten cerdas siap membantu masalah kompos Bapak/Ibu. Masuk website aistudio.google.com untuk mendapatkan akses Gemini API Key (Gratis).</p>
-                        <button onClick={() => setShowKeyInput(!showKeyInput)} className="absolute top-4 right-4 text-emerald-200 hover:text-white"><Key size={18}/></button>
+                        <p className="text-emerald-100 text-sm relative z-10">Asisten cerdas siap membantu masalah kompos Bapak/Ibu. Masuk website aistudio.google.com untuk mendapatkan akses Gemini API Key (Gratis)</p>
+                        <button onClick={() => setShowKeyInput(!showKeyInput)} className="absolute top-4 right-4 text-emerald-200 hover:text-white bg-white/10 p-2 rounded-full"><Key size={18}/></button>
                     </div>
 
+                    {/* Input API Key & Tombol Tutorial */}
                     {showKeyInput && (
-                        <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4 animate-fade-in">
-                            <h3 className="font-bold text-yellow-800 text-sm mb-2">Masukkan Kunci Gemini API (Wajib untuk AI)</h3>
-                            <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Tempel API Key di sini..." className="w-full p-2 border rounded-lg mb-2 text-sm"/>
-                            <button onClick={handleSaveKey} className="bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold w-full">Simpan Kunci</button>
-                            <p className="text-[10px] text-yellow-700 mt-2">*Kunci disimpan di HP Anda (LocalStorage), aman.</p>
+                        <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 mb-4 animate-fade-in shadow-sm">
+                            <h3 className="font-bold text-yellow-800 text-sm mb-2">Masukkan Kunci Gemini API (Wajib)</h3>
+                            <input type="password" value={apiKey} onChange={(e) => setApiKey(e.target.value)} placeholder="Tempel API Key di sini..." className="w-full p-2 border rounded-lg mb-2 text-sm focus:ring-2 focus:ring-yellow-500 bg-white"/>
+                            
+                            <div className="flex gap-2">
+                                <button onClick={handleSaveKey} className="flex-1 bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-yellow-700">Simpan Kunci</button>
+                            </div>
+                            
+                            {/* Tombol Buka Tutorial */}
+                            <button onClick={() => setShowTutorial(true)} className="w-full mt-3 flex items-center justify-center gap-2 text-emerald-700 bg-white border border-emerald-200 py-2 rounded-lg text-xs font-bold hover:bg-emerald-50 transition-colors">
+                                <PlayCircle size={16} /> Bingung Caranya? Tonton Tutorial
+                            </button>
+                            
+                            <p className="text-[10px] text-yellow-700 mt-2 text-center">*Kunci disimpan di HP Anda (LocalStorage), aman.</p>
                         </div>
                     )}
 
+                    {/* Chat Area */}
                     <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
                         <div className="p-6 min-h-[200px] bg-stone-50 border-b border-stone-100">
                             {response ? (
@@ -291,6 +291,34 @@
                             <button onClick={handleAskAI} disabled={isLoading || !query.trim()} className="bg-emerald-600 text-white p-3 rounded-xl shadow-md w-12 h-12 flex items-center justify-center disabled:bg-stone-300"><Send className="h-5 w-5" /></button>
                         </div>
                     </div>
+
+                    {/* MODAL VIDEO TUTORIAL */}
+                    {showTutorial && (
+                        <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+                            <div className="bg-white w-full max-w-lg rounded-xl overflow-hidden shadow-2xl relative">
+                                <div className="p-3 bg-emerald-700 text-white flex justify-between items-center">
+                                    <h3 className="font-bold text-sm flex items-center gap-2"><PlayCircle size={16}/> Tutorial API Key</h3>
+                                    <button onClick={() => setShowTutorial(false)} className="hover:bg-emerald-600 p-1 rounded"><X size={20}/></button>
+                                </div>
+                                <div className="aspect-video w-full bg-black relative">
+                                    {/* Embed Google Drive Video dengan mode preview */}
+                                    <iframe 
+                                        src="https://drive.google.com/file/d/1PX-18xojzhPT9KZy-_Wn50jfmBDCWa7g/preview" 
+                                        className="absolute top-0 left-0 w-full h-full" 
+                                        allow="autoplay"
+                                        title="Tutorial API Key"
+                                    ></iframe>
+                                </div>
+                                <div className="p-4 bg-stone-50 text-center">
+                                    <p className="text-xs text-stone-500 mb-2">Video tidak muncul?</p>
+                                    <a href="https://drive.google.com/file/d/1PX-18xojzhPT9KZy-_Wn50jfmBDCWa7g/view?usp=drivesdk" target="_blank" className="inline-block px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold hover:bg-emerald-200 transition-colors">
+                                        Buka Video di Tab Baru
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             );
         }
